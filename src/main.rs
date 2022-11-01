@@ -3,32 +3,74 @@
 //! where all commands are represented by
 //! [IPA](https://en.wikipedia.org/wiki/International_Phonetic_Alphabet) symbols.
 //!
-//! Rather than using a stack, it uses a grid like <i forget what its called>.
-//!
 //! It also supports befunge-style arrows! Yay!
 
-use clap::Parser;
-use std::path::PathBuf;
+use clap::{arg, value_parser, Arg, Command};
+use std::intrinsics::unreachable;
+use std::path::{Path, PathBuf};
 
-/// The [clap](https://crates.io/crates/clap) CLI parser.
-#[derive(Parser, Debug)]
-#[command(
-    name = "aɪ pʰiː eɪ",
-    version = "0.1.0",
-    author = "William Nelson",
-    about = "An esoteric programming language, where all commands are represented by IPA symbols.",
-    long_about = "aɪ pʰiː eɪ is an esoteric, two-dimensional, programming language, where all \
-     commands are represented by IPA symbols. Rather than using a stack, it uses a grid like \
-     <i forget what its called>. It also supports befunge-style arrows!"
-)]
-struct Cli {
-    /// The file to run.
+struct Args {
     file: PathBuf,
+    verbose: bool,
+    quiet: bool,
+    debug: bool,
 }
 
-/// The entry point
 fn main() {
-    let args: Cli = Cli::parse();
+    let arg_matches = Command::new("ai-phi-eɪ")
+        .version("0.1.0")
+        .author("William Nelson aka CATboardBETA <catboardbeta@gmail.com>")
+        .about("A two-dimensional esoteric programming language")
+        .arg(
+            Arg::with_name("input")
+                .help("The file to run")
+                .required(true)
+                .value_parser(value_parser!(PathBuf))
+                .index(1),
+        )
+        .arg(
+            Arg::with_name("verbose")
+                .help("Prints information about the program as it runs. May be used up to 3 times")
+                .short("v")
+                .long("verbose")
+                .long("verb")
+                .multiple(true)
+                .takes_value(false)
+                .required(false)
+                .conflicts_with("quiet"),
+        )
+        .arg(
+            Arg::with_name("quiet")
+                .help("Does not print information about the program as it runs")
+                .short("q")
+                .long("quiet")
+                .multiple(false)
+                .takes_value(false)
+                .required(false)
+                .conflicts_with("verbose"),
+        )
+        .arg(
+            Arg::with_name("debug")
+                .help("Prints debug information about the program as it runs")
+                .short("d")
+                .long("debug")
+                .multiple(false)
+                .takes_value(false)
+                .required(false)
+                .conflicts_with("quiet"),
+        );
+
+    let arg_matches = arg_matches.get_matches();
+    let args = Args {
+        file: arg_matches
+            .get_one::<PathBuf>("input")
+            .expect("file is required")
+            .take_mut(),
+        verbose: *arg_matches.get_one::<bool>("verbose").unwrap_or(&false),
+        quiet: *arg_matches.get_one::<bool>("quiet").unwrap_or(&false),
+        debug: *arg_matches.get_one::<bool>("debug").unwrap_or(&false),
+    };
+
     if !(args.file.exists() && args.file.is_file()) {
         panic!("File does not exist!");
     } else if args.file.extension().unwrap() != "ipa" {
@@ -43,7 +85,7 @@ fn main() {
         for l in file_contents {
             for c in l {
                 if c == '\t' {
-                    panic!("Tabs are not allowed! Get outta here, ya filthy animal!");
+                    panic!("Tabs are not allowed!");
                 }
                 print!("{}", c);
             }
