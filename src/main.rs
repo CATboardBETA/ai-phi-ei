@@ -112,6 +112,7 @@ fn main() {
                                 }
                             }
                         } else if x == "&" {
+                            cursor.move_
                             while let Some(x) = cursor.get_next() {
                                 if x == ";" {
                                     break;
@@ -121,8 +122,7 @@ fn main() {
                             }
                         } else if x == ";" {
                             panic!(&format!("Expected # or & after θ: {}, {}", cursor.x, cursor.y));
-                        } else if x == {
-                        }
+                        } else if x == ""
                     }
                 }
                 _ => {
