@@ -5,9 +5,12 @@
 //!
 //! It also supports befunge-style arrows! Yay!
 
+pub mod cursor;
+
 use clap::{arg, value_parser, Arg, Command};
 use std::intrinsics::unreachable;
 use std::path::{Path, PathBuf};
+use crate::cursor::Cursor2d;
 
 struct Args {
     file: PathBuf,
@@ -87,9 +90,45 @@ fn main() {
                 if c == '\t' {
                     panic!("Tabs are not allowed!");
                 }
-                print!("{}", c);
             }
             println!();
+        }
+
+        let mut cursor = Cursor2d::new(file_contents);
+        let mut stack: Vec<i32> = Vec::new();
+        let mut output = String::new();
+        let mut input = String::new();
+
+        while let Some(c) = cursor.next() {
+            match c {
+                'θ' => {
+                    if let Some(x) = cursor.get_next() {
+                        if x == "#" {
+                            while let Some(x) = cursor.get_next() {
+                                if x == ";" {
+                                    break;
+                                } else {
+                                    stack.push(x.parse::<i32>().expect(&format!("Expected integer after #: {}, {}", cursor.x, cursor.y)));
+                                }
+                            }
+                        } else if x == "&" {
+                            while let Some(x) = cursor.get_next() {
+                                if x == ";" {
+                                    break;
+                                } else {
+                                    input.push_str(&x);
+                                }
+                            }
+                        } else if x == ";" {
+                            panic!(&format!("Expected # or & after θ: {}, {}", cursor.x, cursor.y));
+                        } else if x == {
+                        }
+                    }
+                }
+                _ => {
+                    panic!("Unknown command: {}", c);
+                }
+            }
         }
     }
 }
