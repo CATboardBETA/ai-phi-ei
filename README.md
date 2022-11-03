@@ -23,7 +23,7 @@ and then end the argument list (`;`).
 
 ### Commands
 Commands are written in the form of a phoneme, followed by an
-optional argument list, and a semicolon (`;`). 
+optional argument list, and, if it has arguments, a semicolon (`;`). 
 
 List of commands:
 
